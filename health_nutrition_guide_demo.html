@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health & Nutrition Guide</title>
+<style>
+:root{--green:#207c4b;--mint:#e9f6ed;--dark:#18382b;--cream:#fbfcf8;--orange:#f3a15c;--muted:#65766b}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--cream);color:var(--dark)}
+.app{max-width:480px;margin:0 auto;min-height:100vh;background:#fff;box-shadow:0 0 35px #0001;position:relative;padding-bottom:84px}
+header{padding:25px 20px 16px;background:linear-gradient(140deg,#e8f6ec,#f7fbf5);border-radius:0 0 26px 26px}
+.brand{font-size:13px;font-weight:800;letter-spacing:.3px;color:var(--green)}h1{font-size:25px;margin:8px 0 4px}p{color:var(--muted);line-height:1.5;margin:6px 0}
+.joke{margin:14px 20px;background:#fff6e9;border:1px solid #ffebce;padding:14px;border-radius:16px;color:#72502b}
+.section{padding:18px 20px}.section h2{font-size:19px;margin:0 0 12px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{border:1px solid #e8eee8;border-radius:18px;padding:14px;background:#fff;box-shadow:0 3px 12px #1b523b08;cursor:pointer;min-height:116px}
+.card .emoji{font-size:27px}.card h3{margin:8px 0 3px;font-size:15px}.card p{font-size:12px;margin:0}
+.tip{background:var(--mint);border-radius:18px;padding:16px;margin-top:12px}
+button{border:0;background:var(--green);color:white;padding:12px 16px;border-radius:12px;font-weight:700;cursor:pointer}button.secondary{background:#edf5ef;color:var(--green)}button.small{padding:8px 10px;font-size:12px}
+input,select,textarea{width:100%;border:1px solid #dce6dc;border-radius:12px;padding:12px;font:inherit;margin:6px 0 12px;background:#fff}
+label{font-size:13px;font-weight:700}nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(480px,100%);display:grid;grid-template-columns:repeat(4,1fr);background:white;border-top:1px solid #e9eee9;padding:8px 5px calc(8px + env(safe-area-inset-bottom));z-index:4}
+nav button{background:white;color:#718078;padding:7px 4px;font-size:12px}nav button.active{background:var(--mint);color:var(--green)}
+.view{display:none}.view.active{display:block}.item{padding:14px;border:1px solid #e9eee9;border-radius:16px;margin:10px 0}.item h3{margin:0 0 6px}.saved{color:var(--green);font-weight:700}
+.modal{position:fixed;inset:0;background:#0006;display:none;align-items:center;justify-content:center;padding:18px;z-index:10}.modal.open{display:flex}.modalbox{background:white;border-radius:20px;padding:20px;width:min(440px,100%);max-height:85vh;overflow:auto}.modalbox h2{margin-top:0}
+.list{padding-left:20px;color:var(--muted);line-height:1.7}.empty{padding:20px;text-align:center;color:var(--muted)}
+</style></head>
+<body><div class="app">
+<header><div class="brand">🌿 HEALTH & NUTRITION GUIDE</div><h1 id="greeting">Good day!</h1><p>Your personal wellness companion.</p></header>
+<div class="joke" id="jokeBox">😄 Loading today's health joke…</div>
+<div id="home" class="view active">
+<div class="section"><h2>Explore your guide</h2><div class="cards">
+<div class="card" onclick="openGuide('Nutrition')"><div class="emoji">🥗</div><h3>Nutrition Guide</h3><p>Food benefits & nutrients</p></div>
+<div class="card" onclick="openGuide('Recipes')"><div class="emoji">🍲</div><h3>Healthy Recipes</h3><p>Simple meal ideas</p></div>
+<div class="card" onclick="openGuide('Fitness')"><div class="emoji">🏃</div><h3>Fitness & Exercise</h3><p>Movement and activity</p></div>
+<div class="card" onclick="openGuide('Wellness')"><div class="emoji">🌙</div><h3>Sleep & Wellness</h3><p>Rest and daily habits</p></div>
+<div class="card" onclick="openGuide('Health Articles')"><div class="emoji">🩺</div><h3>Health Articles</h3><p>General health information</p></div>
+<div class="card" onclick="openGuide('Calculators')"><div class="emoji">🧮</div><h3>Fitness Calculators</h3><p>BMI and daily needs</p></div></div>
+<div class="tip"><b>💡 Daily health tip</b><p>Try adding a variety of colorful vegetables to your meals throughout the week.</p></div>
+<div class="section"><button onclick="showView('survey')">Personalize my guide →</button></div></div>
+<div id="guide" class="view"><div class="section"><h2>Guide Library</h2><div id="guideList"></div></div></div>
+<div id="survey" class="view"><div class="section"><h2>Personal Health Survey</h2><p>Complete this optional survey to personalize your guide. Stored on this device.</p>
+<form id="surveyForm"><label>Name</label><input id="sName" placeholder="Your name">
+<label>Age</label><input id="sAge" type="number" min="1" max="120" placeholder="Age">
+<label>Height (cm)</label><input id="sHeight" type="number" min="50" max="250" placeholder="Height">
+<label>Weight (kg)</label><input id="sWeight" type="number" min="10" max="400" placeholder="Weight">
+<label>Food preference</label><select id="sFood"><option>Vegetarian</option><option>Non-vegetarian</option><option>Vegan</option><option>Other</option></select>
+<label>Main goal</label><select id="sGoal"><option>General wellness</option><option>Healthy weight management</option><option>Build strength</option><option>Improve energy</option><option>Eat more balanced meals</option></select>
+<label>Activity level</label><select id="sActivity"><option>Low / mostly sitting</option><option>Light activity</option><option>Moderately active</option><option>Very active</option></select>
+<button type="submit">Save my survey</button> <button type="button" class="secondary" onclick="clearSurvey()">Clear</button></form><div id="surveyStatus"></div></div></div>
+<div id="saved" class="view"><div class="section"><h2>Saved items</h2><p>Bookmarks stay saved on this device.</p><div id="savedList"></div></div></div>
+<div id="profile" class="view"><div class="section"><h2>My profile</h2><div id="profileInfo"></div><button class="secondary" onclick="showView('survey')">Edit survey</button><div class="tip"><b>Storage</b><p>Your survey and saved bookmarks are stored in your browser on this device (local storage). They aren't sent to a server.</p></div><button class="secondary" onclick="exportData()">Export my data</button></div></div>
+<nav><button class="active" onclick="showView('home',this)">🏠<br>Home</button><button onclick="showView('guide',this)">📚<br>Guide</button><button onclick="showView('saved',this)">🔖<br>Saved</button><button onclick="showView('profile',this)">👤<br>Profile</button></nav>
+</div>
+<div class="modal" id="modal" onclick="if(event.target.id==='modal')closeModal()"><div class="modalbox"><div id="modalContent"></div><button class="secondary" onclick="closeModal()">Close</button></div></div>
+<script>
+const jokes=["Why did the tomato blush? It saw the salad dressing! 🍅","I tried a seafood diet… I see food, and I eat it. 🐟","My fitness watch says I should move. I told it, ‘You first!’ ⌚","A balanced diet is a cookie in each hand. (Just kidding—balance matters!) 🍪","Why did the banana go to the doctor? It wasn't peeling well. 🍌","I started jogging—but my snacks kept calling me back. 😄"];
+const guideData={
+Nutrition:[["🥦 Vegetables","Add a range of colors; vegetables provide fiber and micronutrients."],["🍎 Fruits","Whole fruit is a convenient source of fiber and vitamins."],["🥜 Protein foods","Beans, lentils, eggs, dairy, fish or nuts can contribute protein."],["🌾 Whole grains","Oats, brown rice and whole-grain breads provide fiber."],["🫒 Healthy fats","Nuts, seeds and plant oils can fit into balanced meals."]],
+Recipes:[["🥣 Breakfast idea","Oats with fruit, nuts or yogurt; adjust portions to your needs."],["🍛 Lunch idea","Rice or roti, dal/beans, vegetables and a protein-rich side."],["🥗 Dinner idea","Vegetable-rich meal with a protein source and grains or starchy food."],["🍌 Snack idea","Fruit, yogurt, roasted chickpeas or a small handful of nuts."]],
+Fitness:[["🚶 Walking","Start with a comfortable pace and build gradually."],["🧘 Mobility","Gentle stretching or mobility exercises can help you move comfortably."],["🏋️ Strength","Begin with simple bodyweight movements and progress gradually."],["🫁 Recovery","Rest days and comfortable pacing are part of a sustainable routine."]],
+Wellness:[["🌙 Sleep routine","Keep a regular sleep and wake time when practical."],["💧 Hydration","Drink regularly; needs vary with weather, activity and individual health."],["🧘 Stress","Try a short breathing break or calming activity."],["🌤️ Daily routine","Build small, repeatable habits instead of trying to change everything at once."]],
+"Health Articles":[["🩺 General wellness","This app provides educational information, not diagnosis or treatment."],["🧑‍⚕️ When to seek care","For persistent symptoms or health concerns, consult a qualified healthcare professional."],["🥗 Balanced eating","A varied pattern of foods can help support nutritional needs."]],
+Calculators:[["📏 BMI calculator","BMI is a screening measure, not a diagnosis. Enter height and weight in your profile to calculate."],["🔥 BMR estimate","BMR formulas are estimates and should be interpreted cautiously."],["⚖️ Weight goals","Use safe, gradual goals; avoid extreme restriction."]]
+};
+let saved=JSON.parse(localStorage.getItem('hn_saved')||'[]');let survey=JSON.parse(localStorage.getItem('hn_survey')||'null');
+document.getElementById('jokeBox').textContent='😄 '+jokes[Math.floor(Math.random()*jokes.length)];
+document.getElementById('greeting').textContent=survey?.name?`Hello, ${survey.name}! 👋`:'Good day! 👋';
+function showView(id,btn){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');if(btn){document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}if(id==='guide')renderGuide();if(id==='saved')renderSaved();if(id==='profile')renderProfile()}
+function openGuide(name){showView('guide');renderGuide(name)}
+function renderGuide(selected){let list=document.getElementById('guideList');list.innerHTML='';let groups=selected?[selected]:Object.keys(guideData);groups.forEach(g=>{let heading=document.createElement('h3');heading.textContent=g;list.appendChild(heading);(guideData[g]||[]).forEach(([title,desc])=>{let div=document.createElement('div');div.className='item';div.innerHTML=`<h3>${title}</h3><p>${desc}</p><button class="small secondary" onclick="saveItem('${(g+' — '+title).replace(/'/g,"\\'")}')">🔖 Save</button>`;list.appendChild(div)})})}
+function saveItem(item){if(!saved.includes(item)){saved.push(item);localStorage.setItem('hn_saved',JSON.stringify(saved))}alert('Saved to your bookmarks!');}
+function renderSaved(){let e=document.getElementById('savedList');e.innerHTML=saved.length?saved.map(x=>`<div class="item"><p class="saved">🔖 ${x}</p><button class="small secondary" onclick="removeSaved('${x.replace(/'/g,"\\'")}')">Remove</button></div>`).join(''):'<div class="empty">No saved items yet. Open Guide and bookmark something.</div>'}
+function removeSaved(x){saved=saved.filter(i=>i!==x);localStorage.setItem('hn_saved',JSON.stringify(saved));renderSaved()}
+document.getElementById('surveyForm').addEventListener('submit',e=>{e.preventDefault();survey={name:sName.value,age:sAge.value,height:sHeight.value,weight:sWeight.value,food:sFood.value,goal:sGoal.value,activity:sActivity.value};localStorage.setItem('hn_survey',JSON.stringify(survey));greeting.textContent=survey.name?`Hello, ${survey.name}! 👋`:'Welcome back!';surveyStatus.innerHTML='<div class="tip">✓ Survey saved on this device.</div>';});
+function clearSurvey(){localStorage.removeItem('hn_survey');survey=null;surveyForm.reset();surveyStatus.textContent='Survey data cleared.'}
+function renderProfile(){let p=document.getElementById('profileInfo');p.innerHTML=survey?`<div class="item"><h3>${survey.name||'Profile'}</h3><p>Age: ${survey.age||'—'} · Height: ${survey.height||'—'} cm · Weight: ${survey.weight||'—'} kg</p><p>Food: ${survey.food} · Goal: ${survey.goal} · Activity: ${survey.activity}</p></div>`:'<div class="empty">No survey profile yet. Complete the survey to personalize your guide.</div>'}
+function exportData(){let data={survey,saved};let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='health-nutrition-data.json';a.click();URL.revokeObjectURL(a.href)}
+</script></body></html>
